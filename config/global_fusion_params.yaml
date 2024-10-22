@@ -1,0 +1,20 @@
+global_fusion_node:
+  ros__parameters:
+
+    input_gridmaps: [lidar_grid_map, cv_grid_map]
+    lidar_grid_map:
+      topic: lidar_grid_map
+      layers: [step, slope]
+      step:
+        reliability: 0.8
+      slope: 
+        reliability: 0.2
+    cv_grid_map:
+      topic: cv_grid_map
+      layers: [road, footpath]
+      road:
+        reliability: 0.8
+      footpath: 
+        reliability: 0.2
+
+    output_topic: /fused_map

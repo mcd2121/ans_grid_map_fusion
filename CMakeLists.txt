@@ -7,9 +7,42 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)  # Replace with actual grid map message dependencies
+find_package(pluginlib REQUIRED)
+
+include_directories(
+    include
+  )
+
+set(dependencies
+  rclcpp
+  std_msgs
+  pluginlib
+)
+
+
+add_executable(global_fusion_node src/global_fusion_node.cpp)
+ament_target_dependencies(global_fusion_node SYSTEM
+    ${dependencies}
+)
+# Install targets
+install(TARGETS
+  global_fusion_node
+  DESTINATION lib/${PROJECT_NAME})
+
+# Install header files
+install(
+  DIRECTORY include/
+  DESTINATION include/${PROJECT_NAME}
+)
+
+
+# Mark other files for installation
+install(
+  DIRECTORY config launch rviz
+  DESTINATION share/${PROJECT_NAME}
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
