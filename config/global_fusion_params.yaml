@@ -3,7 +3,7 @@ global_fusion_node:
 
     # input_gridmaps: [lidar_grid_map, cv_grid_map, cv_grid_map_b, cv_grid_map_c]
     input_gridmaps: [lidar_grid_map, cv_grid_map]
-    fusion_method: ans_grid_map_fusion::Evidential
+    fusion_policy: ans_grid_map_fusion::Evidential
     lidar_grid_map:
       topic: /elevation_map_raw
       layers: [step, slope]

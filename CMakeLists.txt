@@ -46,12 +46,12 @@ install(
   DESTINATION include/${PROJECT_NAME}
 )
 
-
 # Mark other files for installation
 install(
   DIRECTORY config launch rviz
   DESTINATION share/${PROJECT_NAME}
 )
+
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
