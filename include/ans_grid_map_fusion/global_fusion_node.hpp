@@ -2,9 +2,12 @@
 #define ANS_GRID_MAP_FUSION_GLOBAL__FUSION_NODE_HPP_
 
 #include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
 #include <vector>
 #include <string>
+#include <pluginlib/class_loader.hpp>
+#include <grid_map_msgs/msg/grid_map.hpp>
+#include "grid_map_core/GridMap.hpp"
+#include "grid_map_ros/GridMapRosConverter.hpp"
 
 namespace ans_grid_map_fusion {
 
@@ -15,16 +18,18 @@ public:
     virtual ~GlobalFusion();
 private:
 
-    void on_gridmap_cb(const std_msgs::msg::String::SharedPtr msg, const std::string &topic_name);
+    void grid_map_cb(const grid_map_msgs::msg::GridMap::ConstSharedPtr &msg, const std::string &grid_map_name);
+
     void load_parameters();
 
-    rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr param_callback_handle_;
-    rclcpp::Node::OnSetParametersCallbackHandle::SharedPtr param_callback_;
+    rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr param_cb_;
 
-    std::vector<rclcpp::Subscription<std_msgs::msg::String>::SharedPtr> subscribers_;
-    std::map<std::string, rclcpp::SubscriptionBase::SharedPtr> subscriptions_;
+    std::map<std::string, rclcpp::Subscription<grid_map_msgs::msg::GridMap>::SharedPtr> subscriptions_;
+
 
     // Parameters
+    rcl_interfaces::msg::SetParametersResult parameters_cb(const std::vector<rclcpp::Parameter> &parameters);
+
     struct LayerReliability
     {
         std::string name;
@@ -34,7 +39,7 @@ private:
     struct GridMapConfig
     {
         std::string topic;
-        std::vector<LayerReliability> layers;
+        std::map<std::string, double> layer_reliablity;
     };
 
     std::map<std::string, GridMapConfig> grid_map_configs_;

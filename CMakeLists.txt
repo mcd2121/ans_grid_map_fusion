@@ -10,6 +10,10 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)  # Replace with actual grid map message dependencies
 find_package(pluginlib REQUIRED)
+find_package(grid_map_msgs REQUIRED)
+find_package(grid_map REQUIRED)
+find_package(grid_map_core REQUIRED)
+find_package(grid_map_ros REQUIRED)
 
 include_directories(
     include
@@ -19,6 +23,11 @@ set(dependencies
   rclcpp
   std_msgs
   pluginlib
+  grid_map 
+  grid_map_core 
+  grid_map_ros 
+  grid_map_msgs 
+
 )
 
 

@@ -6,12 +6,25 @@ GlobalFusion::GlobalFusion() : Node("global_fusion_node")
 {
 
     load_parameters();
+    param_cb_ = this->add_on_set_parameters_callback(
+      std::bind(&GlobalFusion::parameters_cb, this, std::placeholders::_1));
+    
+    for (auto &&gridmap : grid_map_configs_)
+    {
+        std::function<void(const grid_map_msgs::msg::GridMap::ConstSharedPtr msg)> fnc = std::bind(
+            &GlobalFusion::grid_map_cb, this, std::placeholders::_1, gridmap.second.topic);
+        
+        subscriptions_[gridmap.second.topic] = this->create_subscription<grid_map_msgs::msg::GridMap>(
+            gridmap.second.topic, rclcpp::QoS{1}.best_effort(), fnc);
+    }
+    
 
 }
 
 GlobalFusion::~GlobalFusion() {
     // Destructor implementation
 }
+
 
 void GlobalFusion::load_parameters()
 {
@@ -37,14 +50,50 @@ void GlobalFusion::load_parameters()
         {
             this->declare_parameter<double>(gridmap_name + "." + layer + ".reliability", 1.0);
             double reliability = this->get_parameter(gridmap_name + "." + layer + ".reliability").as_double();
-            grid_map_config.layers.push_back({layer, reliability});
+            grid_map_config.layer_reliablity[layer] = reliability;
         }
-
         grid_map_configs_[gridmap_name] = grid_map_config;
     }
 
-    RCLCPP_INFO(this->get_logger(), "Loaded parameters for grid maps.");
+    // RCLCPP_INFO(this->get_logger(), "Loaded parameters for grid maps.");
 }
+
+rcl_interfaces::msg::SetParametersResult GlobalFusion::parameters_cb(const std::vector<rclcpp::Parameter> &parameters)
+{
+    rcl_interfaces::msg::SetParametersResult result;
+    result.successful = true;
+    result.reason = "success";
+    std::vector<std::string> keys;
+    std::string s;
+    for (const auto &param: parameters)
+    {
+        std::string name = param.get_name();
+        std::stringstream ss(name);
+        
+        if (name.find(".") == std::string::npos) {
+            continue;
+        }
+
+        while (getline(ss, s, '.'))
+        {
+            keys.push_back(s);
+        }
+
+        grid_map_configs_[keys[0]].layer_reliablity[keys[1]] = param.as_double();
+        // RCLCPP_INFO_STREAM(this->get_logger(), keys[0] << " " << keys[1] << " " << keys[2] );
+
+    break;
+    }
+    return result;
+}
+
+void GlobalFusion::grid_map_cb(const grid_map_msgs::msg::GridMap::ConstSharedPtr &msg, const std::string &grid_map_name)
+{
+    RCLCPP_INFO_STREAM(this->get_logger(), grid_map_name);
+    
+
+}
+
 
 
 } // namespace
@@ -58,3 +107,4 @@ int main(int argc, char ** argv)
   rclcpp::shutdown();
   return 0;
 }
+
