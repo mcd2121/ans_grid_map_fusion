@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <pluginlib/class_loader.hpp>
+#include "ans_grid_map_fusion/fusion.cpp"
 #include <grid_map_msgs/msg/grid_map.hpp>
 #include "grid_map_core/GridMap.hpp"
 #include "grid_map_ros/GridMapRosConverter.hpp"
@@ -24,6 +25,8 @@ private:
 
     std::map<std::string, rclcpp::Subscription<grid_map_msgs::msg::GridMap>::SharedPtr> subscriptions_;
 
+    pluginlib::ClassLoader<polygon_base::RegularPolygon> plugin_loader_("ans_grid_map_fusion", "ans_grid_map_fusion::Fusion");
+
 
     // Parameters
     rcl_interfaces::msg::SetParametersResult parameters_cb(const std::vector<rclcpp::Parameter> &parameters);
@@ -42,6 +45,7 @@ private:
 
     std::map<std::string, GridMapConfig> grid_map_configs_;
     std::string output_topic_;
+    std::string fusion_policy_;
 
 };
 

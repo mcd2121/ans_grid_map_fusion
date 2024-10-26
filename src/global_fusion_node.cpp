@@ -10,9 +10,9 @@ GlobalFusion::GlobalFusion() : Node("global_fusion_node")
     this->declare_parameter<std::string>("output_topic", "/fused_map_global");
     this->declare_parameter<std::string>("fusion_policy", "ans_grid_map_fusion::Evidential");
 
-    
     std::vector<std::string> input_gridmaps = this->get_parameter("input_gridmaps").as_string_array();
     output_topic_ = this->get_parameter("output_topic").as_string();
+    fusion_policy_ = this->get_parameter("fusion_policy").as_string();
 
     for (const auto &gridmap_name : input_gridmaps)
     {
@@ -34,6 +34,8 @@ GlobalFusion::GlobalFusion() : Node("global_fusion_node")
         grid_map_configs_[gridmap_name] = grid_map_config;
     }
 
+    std::shared_ptr<ans_grid_map_fusion::Fusion> fusion_policy = plugin_loader_.createSharedInstance(fusion_policy_);
+
     param_cb_ = this->add_on_set_parameters_callback(
       std::bind(&GlobalFusion::parameters_cb, this, std::placeholders::_1));
     
@@ -50,9 +52,7 @@ GlobalFusion::GlobalFusion() : Node("global_fusion_node")
 
 }
 
-GlobalFusion::~GlobalFusion() {
-    // Destructor implementation
-}
+GlobalFusion::~GlobalFusion() {}
 
 
 
@@ -78,7 +78,6 @@ rcl_interfaces::msg::SetParametersResult GlobalFusion::parameters_cb(const std::
         }
 
         grid_map_configs_[keys[0]].layer_reliablity[keys[1]] = param.as_double();
-        // RCLCPP_INFO_STREAM(this->get_logger(), keys[0] << " " << keys[1] << " " << keys[2] );
 
     break;
     }
@@ -89,7 +88,8 @@ void GlobalFusion::grid_map_cb(const grid_map_msgs::msg::GridMap::ConstSharedPtr
 {
     RCLCPP_INFO_STREAM(this->get_logger(), grid_map_name);
 
-
+    grid_map::GridMap gridmap_in;
+    
 }
 
 
