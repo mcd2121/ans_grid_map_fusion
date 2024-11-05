@@ -30,6 +30,10 @@ set(dependencies
 
 )
 
+add_library(fusion_plugins src/EvidentialFusion.cpp)
+ament_target_dependencies(fusion_plugins SYSTEM
+    ${dependencies}
+)
 
 add_executable(global_fusion_node src/global_fusion_node.cpp)
 ament_target_dependencies(global_fusion_node SYSTEM
@@ -64,5 +68,5 @@ if(BUILD_TESTING)
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
-
+pluginlib_export_plugin_description_file(ans_grid_map_fusion_base fusion_plugins.xml)
 ament_package()

@@ -8,7 +8,7 @@ GlobalFusion::GlobalFusion() : Node("global_fusion_node")
     // Declare parameters
     this->declare_parameter<std::vector<std::string>>("input_gridmaps", {});
     this->declare_parameter<std::string>("output_topic", "/fused_map_global");
-    this->declare_parameter<std::string>("fusion_policy", "ans_grid_map_fusion::Evidential");
+    this->declare_parameter<std::string>("fusion_policy", "ans_grid_map_fusion::EvidentialFusion");
 
     std::vector<std::string> input_gridmaps = this->get_parameter("input_gridmaps").as_string_array();
     output_topic_ = this->get_parameter("output_topic").as_string();
@@ -34,7 +34,7 @@ GlobalFusion::GlobalFusion() : Node("global_fusion_node")
         grid_map_configs_[gridmap_name] = grid_map_config;
     }
 
-    std::shared_ptr<ans_grid_map_fusion::Fusion> fusion_policy = plugin_loader_.createSharedInstance(fusion_policy_);
+    auto fusion_handle_ = plugin_loader_.createSharedInstance(fusion_policy_);
 
     param_cb_ = this->add_on_set_parameters_callback(
       std::bind(&GlobalFusion::parameters_cb, this, std::placeholders::_1));
@@ -88,7 +88,12 @@ void GlobalFusion::grid_map_cb(const grid_map_msgs::msg::GridMap::ConstSharedPtr
 {
     RCLCPP_INFO_STREAM(this->get_logger(), grid_map_name);
 
-    grid_map::GridMap gridmap_in;
+    grid_map::GridMap inputMap;
+    grid_map::GridMapRosConverter::fromMessage(*msg, inputMap);
+
+    std::vector<double> reliabilities = {5.1,6.3,6.6};
+
+    fusion_handle_->update(*msg, reliabilities);
     
 }
 

@@ -3,8 +3,8 @@ global_fusion_node:
 
     # input_gridmaps: [lidar_grid_map, cv_grid_map, cv_grid_map_b, cv_grid_map_c]
     input_gridmaps: [lidar_grid_map, cv_grid_map]
-    fusion_policy_global: ans_grid_map_fusion::LogOdds
-    fusion_policy_local: ans_grid_map_fusion::Evidential
+    fusion_policy_global: ans_grid_map_fusion::EvidentialFusion
+    fusion_policy_local: ans_grid_map_fusion::EvidentialFusion
 
     lidar_grid_map:
       topic: /elevation_map_raw

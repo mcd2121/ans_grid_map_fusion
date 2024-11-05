@@ -10,16 +10,15 @@
 #include "grid_map_core/GridMap.hpp"
 #include "grid_map_ros/GridMapRosConverter.hpp"
 
-namespace ans_grid_map_fusion
+namespace ans_grid_map_fusion_base
 {
   class Fusion
   {
     public:
-      virtual void update(const grid_map_msgs::msg::GridMap gridmap, const std::vector<double> reliability) = 0;
-      virtual ~Fusion(){}
-
-    protected:
       Fusion(){}
+      virtual ~Fusion(){}
+      virtual void update(const grid_map_msgs::msg::GridMap gridmap, const std::vector<double> reliability) = 0;
+
   };
 }  // namespace fusion_base
 
