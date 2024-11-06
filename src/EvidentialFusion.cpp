@@ -4,9 +4,13 @@ namespace ans_grid_map_fusion
 {
 
     //   EvidentialFusion::EvidentialFusion(){}
-
-      void EvidentialFusion::update(const grid_map_msgs::msg::GridMap gridmap, const std::vector<double> reliability) {
-            
+      bool EvidentialFusion::configure(const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr & node_logger){
+        this->logging_interface_ = node_logger;
+        return true;
+      }
+      bool EvidentialFusion::update(const grid_map::GridMap msg, const std::vector<double> reliability) {
+        // RCLCPP_INFO( this->logging_interface_->get_logger(), "reliability");
+        return true;
       };
 
 }  // namespace fusion_base
@@ -14,4 +18,4 @@ namespace ans_grid_map_fusion
 
 #include <pluginlib/class_list_macros.hpp>
 
-PLUGINLIB_EXPORT_CLASS(ans_grid_map_fusion::EvidentialFusion, ans_grid_map_fusion_base::Fusion)
+PLUGINLIB_EXPORT_CLASS(ans_grid_map_fusion::EvidentialFusion, ans_grid_map_fusion::Fusion)

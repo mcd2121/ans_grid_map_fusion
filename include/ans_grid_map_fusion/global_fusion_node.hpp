@@ -25,9 +25,9 @@ private:
 
     std::map<std::string, rclcpp::Subscription<grid_map_msgs::msg::GridMap>::SharedPtr> subscriptions_;
 
-    pluginlib::ClassLoader<ans_grid_map_fusion_base::Fusion> plugin_loader_{"ans_grid_map_fusion", "ans_grid_map_fusion_base::Fusion"};
+    pluginlib::ClassLoader<ans_grid_map_fusion::Fusion> plugin_loader_{"ans_grid_map_fusion", "ans_grid_map_fusion::Fusion"};
 
-    std::shared_ptr<ans_grid_map_fusion_base::Fusion> fusion_handle_;
+    std::shared_ptr<ans_grid_map_fusion::Fusion> fusion_handle_;
 
     // Parameters
     rcl_interfaces::msg::SetParametersResult parameters_cb(const std::vector<rclcpp::Parameter> &parameters);

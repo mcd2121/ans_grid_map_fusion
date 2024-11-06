@@ -35,6 +35,7 @@ GlobalFusion::GlobalFusion() : Node("global_fusion_node")
     }
 
     auto fusion_handle_ = plugin_loader_.createSharedInstance(fusion_policy_);
+    fusion_handle_->configure(this->get_node_logging_interface());
 
     param_cb_ = this->add_on_set_parameters_callback(
       std::bind(&GlobalFusion::parameters_cb, this, std::placeholders::_1));
@@ -93,7 +94,7 @@ void GlobalFusion::grid_map_cb(const grid_map_msgs::msg::GridMap::ConstSharedPtr
 
     std::vector<double> reliabilities = {5.1,6.3,6.6};
 
-    fusion_handle_->update(*msg, reliabilities);
+    fusion_handle_->update(inputMap, reliabilities);
     
 }
 
