@@ -1,8 +1,12 @@
-<library path="ans_grid_map_fusion">
-  <!-- <class type="ans_grid_map_fusion::Loggodds" base_class_type="ans_grid_map_fusion::Fusion">
-    <description>This is a Loggodds plugin.</description>
-  </class> -->
-  <class type="ans_grid_map_fusion::EvidentialFusion" base_class_type="ans_grid_map_fusion_base::Fusion">
-    <description>This is a Evidential plugin.</description>
-  </class>
-</library>
+<class_libraries>
+  <library path="evidential_fusion_plugin">
+    <!-- <class type="ans_grid_map_fusion::Loggodds" base_class_type="ans_grid_map_fusion::Fusion">
+      <description>This is a Loggodds plugin.</description>
+    </class> -->
+    <!-- <class name="ans_grid_map_fusion/EvidentialFusion" type="ans_grid_map_fusion::EvidentialFusion" base_class_type="ans_grid_map_fusion::Fusion"> -->
+    <class type="ans_grid_map_fusion::EvidentialFusion" base_class_type="ans_grid_map_fusion::Fusion">
+      <description>This is a Evidential plugin.</description>
+    </class>
+  </library>
+
+</class_libraries>

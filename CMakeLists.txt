@@ -30,17 +30,32 @@ set(dependencies
 
 )
 
-add_library(fusion_plugins src/EvidentialFusion.cpp)
-ament_target_dependencies(fusion_plugins SYSTEM
+set(fusion_libs
+  evidential_fusion_plugin
+  )
+add_library(evidential_fusion_plugin SHARED src/EvidentialFusion.cpp)
+
+foreach(lib_name ${fusion_libs})
+  ament_target_dependencies(${lib_name} SYSTEM
     ${dependencies}
-)
+  )
+
+  if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    target_compile_options(${lib_name} PRIVATE "SHELL:--param ggc-min-expand=1")
+    target_compile_options(${lib_name} PRIVATE "SHELL:--param ggc-min-heapsize=32768")
+  endif()
+endforeach()
+
+
 
 add_executable(global_fusion_node src/global_fusion_node.cpp)
 ament_target_dependencies(global_fusion_node SYSTEM
     ${dependencies}
 )
+
 # Install targets
 install(TARGETS
+  ${fusion_libs}
   global_fusion_node
   DESTINATION lib/${PROJECT_NAME})
 
@@ -55,7 +70,10 @@ install(
   DIRECTORY config launch rviz
   DESTINATION share/${PROJECT_NAME}
 )
-
+install(
+  FILES fusion_plugins.xml
+  DESTINATION share/${PROJECT_NAME}
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -68,5 +86,7 @@ if(BUILD_TESTING)
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
-pluginlib_export_plugin_description_file(ans_grid_map_fusion_base fusion_plugins.xml)
+ament_export_dependencies(${dependencies})
+ament_export_libraries(${fusion_libs})
+pluginlib_export_plugin_description_file(ans_grid_map_fusion fusion_plugins.xml)
 ament_package()
