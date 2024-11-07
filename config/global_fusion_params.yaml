@@ -8,17 +8,17 @@ global_fusion_node:
 
     lidar_grid_map:
       topic: /elevation_map_raw
-      layers: [step, slope]
-      step:
+      layers: [elevation, slope_layer]
+      elevation:
         reliability: 0.8
-      slope: 
+      slope_layer: 
         reliability: 0.2
     cv_grid_map:
       topic: /grid_map_filter_demo_convex/smoothed_map_test
-      layers: [road, footpath]
-      road:
+      layers: [step_net_layer, slope_layer]
+      step_net_layer:
         reliability: 0.8
-      footpath: 
+      slope_layer: 
         reliability: 0.2
     # cv_grid_map_b:
     #   topic: cv_grid_map_topic_b

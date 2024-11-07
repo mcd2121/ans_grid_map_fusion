@@ -24,7 +24,7 @@ def generate_launch_description():
             name='global_fusion_node',
             parameters=[LaunchConfiguration('config_file')],
             output='screen',
-            prefix=['xterm -e gdb -ex=r --args'],
+            # prefix=['xterm -e gdb -ex=r --args'],
             # prefix=['gdbserver localhost:10009'],
             
         )

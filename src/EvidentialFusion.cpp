@@ -11,7 +11,7 @@ namespace ans_grid_map_fusion
       bool EvidentialFusion::update(const grid_map::GridMap msg, const std::vector<double> reliability) {
         // RCLCPP_INFO( this->logging_interface_->get_logger(), "reliability");
         return true;
-      };
+      }
 
 }  // namespace fusion_base
 
