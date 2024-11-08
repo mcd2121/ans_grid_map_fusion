@@ -49,7 +49,11 @@ GlobalFusion::GlobalFusion() : Node("global_fusion_node")
         subscriptions_[gridmap.second.topic] = this->create_subscription<grid_map_msgs::msg::GridMap>(
             gridmap.second.topic, rclcpp::QoS{1}.best_effort(), fnc);
     }
-    
+
+    timer_ = this->create_wall_timer(
+        std::chrono::milliseconds(50), std::bind(&GlobalFusion::update, this));
+
+
 
 }
 
@@ -91,22 +95,60 @@ void GlobalFusion::grid_map_cb(const grid_map_msgs::msg::GridMap::ConstSharedPtr
 
     grid_map::GridMap inputMap;
     grid_map::GridMapRosConverter::fromMessage(*msg, inputMap);
-    
+
+    rclcpp::Time latest_time = msg->header.stamp;
+
     for (const auto &layer : inputMap.getLayers()){
         if(grid_map_configs_[grid_map_name].layer_reliablity.find(layer) != grid_map_configs_[grid_map_name].layer_reliablity.end()){
-            map_buffer_.add(layer,  inputMap[layer]);
+            // if (layer_buffer_.find(layer) == layer_buffer_.end() || rclcpp::Time(layer_buffer_[layer].time) < latest_time) {
+            // if (layer_buffer_.find(layer) == layer_buffer_.end()) {
+            //     layer_buffer_[layer].data = inputMap[layer];
+            //     layer_buffer_[layer].time = latest_time;
+            // }
+            layer_buffer_[layer].data = inputMap[layer];
+            layer_buffer_[layer].time = latest_time;
         }
     }
-    for (const auto &layer : map_buffer_.getLayers()){
-        RCLCPP_INFO_STREAM(this->get_logger(), layer);
+
+    // for (const auto &layer : map_buffer_.getLayers()){
+    //     // RCLCPP_INFO_STREAM(this->get_logger(), layer);
+    // }
+
+    // std::vector<double> reliabilities = {5.1,6.3,6.6};
+    // update(inputMap, reliabilities);
+}
+
+
+void GlobalFusion::update(){
+    RCLCPP_INFO_STREAM(this->get_logger(), "timer");
+
+    std::vector<int> delays;
+
+    delays.clear();
+    for (auto it = layer_buffer_.begin(); it != layer_buffer_.end(); it++) {
+        int age = (this->get_clock()->now().seconds()  - rclcpp::Time(it->second.time).seconds());
+        delays.push_back(age);
+        RCLCPP_INFO_STREAM(this->get_logger(), it->first << " age  " << age << " delays.size "<< delays.size());
+    }
+    RCLCPP_INFO_STREAM(this->get_logger(), "timer2");
+    
+    if(delays.empty()){
+        return;
+    }
+    int min_delay = *std::min_element(delays.begin(), delays.end());
+
+    for (auto it = layer_buffer_.begin(); it != layer_buffer_.end(); it++) {
+        int diff = std::abs(this->get_clock()->now().seconds() - rclcpp::Time(it->second.time).seconds() - min_delay );
+        RCLCPP_INFO_STREAM(this->get_logger(), it->first << " min_delay  " << min_delay << " diff "<< diff);
+        if(diff > 5){
+            
+        }
     }
 
-
-    std::vector<double> reliabilities = {5.1,6.3,6.6};
-
-    update(inputMap, reliabilities);
+    
     
 }
+
 
 bool GlobalFusion::global_fusion(const grid_map::GridMap &new_map)
 {
@@ -196,10 +238,6 @@ grid_map::Position GlobalFusion::calculateNewGlobalPosition(const grid_map::Grid
 }
 
 
-bool GlobalFusion::update(const grid_map::GridMap &mapIn, const std::vector<double> reliability){
-    RCLCPP_INFO_STREAM(this->get_logger(), reliability[0]);
-    
-}
 
 
 
